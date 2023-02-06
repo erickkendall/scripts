@@ -1,0 +1,16 @@
+---
+# tasks file for disable-auto-update
+
+- name: Check if NVIDIA driver is installed
+  command: nvidia-smi -L
+  register: nvidia
+  ignore_errors: true
+ 
+- name: Copy auto upgrades file server
+  copy:
+    src: 20auto-upgrades
+    dest: /etc/apt/apt.conf.d/
+    owner: root
+    group: root
+    mode: '0644'
+  when: nvidia.stdout_lines is defined

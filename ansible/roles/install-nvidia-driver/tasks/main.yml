@@ -1,0 +1,38 @@
+---
+# tasks file for install-nvidia-driver (Debian based)
+
+- name: remove existing NVIDIA driver
+  command: apt-get remove --purge '^nvidia-.*' -y
+
+- name: Unconditionally reboot the machine after removing existing NVIDIA drivers
+  reboot:
+
+- name: get the kernel release
+  command: uname -r
+  register: result
+
+- name: install Linux headers
+  apt:
+    name: "linux-headers-{{ result.stdout }}"
+    state: present
+
+- name: get distribution
+  debug:
+    msg: "{{ ansible_distribution_version }}"
+
+- name: download CUDA keyring
+  get_url:
+    url: "https://developer.download.nvidia.com/compute/cuda/repos/{{ ansible_distribution | lower }}{{ ansible_distribution_version | regex_replace('[.]', '')  }}/x86_64/cuda-keyring_1.0-1_all.deb"
+    dest: "/home/{{ user }}"
+    mode: '0440'
+
+- name: Intall CUDA keyring
+  command: dpkg -i cuda-keyring_1.0-1_all.deb
+
+- name: Update repositories cache and install CUDA drivers
+  apt:
+    name: cuda-drivers
+    update_cache: yes
+
+- name: Unconditionally reboot the machine after installing NVIDIA driver
+  reboot:

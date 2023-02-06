@@ -1,0 +1,6 @@
+---
+bind_forward_zones:
+  - darvis.lab
+
+bind_reverse_zones:
+  - 50.168.192.in-addr.arpa

@@ -1,0 +1,160 @@
+{
+  "extractors": [
+    {
+      "title": "AI Core Detector - Detection FPS",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{NOTSPACE}%{SPACE}%{NUMBER:detection_fps;float}%{SPACE}%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{NOTSPACE}%{SPACE}%{NUMBER:detection_images;long}%{SPACE}%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{WORD}%{SPACE}%{NOTSPACE}%{SPACE}%{NUMBER:memory_processed_frames;float}%{SPACE}%{WORD}%{SPACE}%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{WORD}%{SPACE}%{NOTSPACE}%{SPACE}%{NUMBER:memory_usage_detections;float}%{SPACE}%{WORD}",
+        "named_captures_only": true
+      },
+      "condition_type": "string",
+      "condition_value": "Detection Fps:"
+    },
+    {
+      "title": "AI Core Cleaner - File Cleanup",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{NUMBER:cleaner_file_count;int}%{SPACE}%{WORD}%{SPACE}%{WORD}%{SPACE}%{SECOND:cleaner_time;float}%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{WORD}%{NOTSPACE}%{SPACE}%{NUMBER:cleaner_disk;float}%{NOTSPACE}",
+        "named_captures_only": true
+      },
+      "condition_type": "string",
+      "condition_value": "Occupied Space"
+    },
+    {
+      "title": "AI Core Detector - Frame Analysis",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{WORD}%{SPACE}%{NOTSPACE}%{SPACE}%{UUID:frame_id;string}%{SPACE}%{WORD}%{SPACE}%{NUMBER:finish_timestamp;string}%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{NUMBER:processing_time;float}%{SPACE}%{WORD}%{SPACE}%{WORD}%{SPACE}%{WORD}%{SPACE}%{WORD}%{SPACE}%{NUMBER:start_timestamp,string}",
+        "named_captures_only": true
+      },
+      "condition_type": "string",
+      "condition_value": "Finished analyzing"
+    },
+    {
+      "title": "AI Core Smoothing - Frame Delay",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{UUID:frame_id;string}%{SPACE}%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{WORD}%{SPACE}%{TIME:frame_capture_time;string}%{SPACE}%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{NUMBER:frame_capture_unixtime;long}%{SPACE}%{NOTSPACE}%{SPACE}%{WORD}%{SPACE}%{WORD}%{SPACE}%{WORD}%{NOTSPACE}%{SPACE}%{NUMBER:frame_realtime_delay:float}%{SPACE}%{WORD}",
+        "named_captures_only": true
+      },
+      "condition_type": "string",
+      "condition_value": "Delay from Realtime:"
+    },
+    {
+      "title": "AI Core Smoothing - Counts",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "message",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{GREEDYDATA:smoothing_log:string}",
+        "named_captures_only": true
+      },
+      "condition_type": "string",
+      "condition_value": "Smoothing output"
+    },
+    {
+      "title": "AI Core Smoothing - Counts JSON",
+      "extractor_type": "json",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "smoothing_log",
+      "target_field": "",
+      "extractor_config": {
+        "flatten": false,
+        "list_separator": ", ",
+        "kv_separator": "=",
+        "key_prefix": "",
+        "key_separator": "_",
+        "replace_key_whitespace": false,
+        "key_whitespace_replacement": "_"
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "AI Core Smoothing - Person Count",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "counts",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{GREEDYDATA}person%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{BASE10NUM:count_person;int}",
+        "named_captures_only": true
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "AI Core Smoothing - Clean Bed Count",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "counts",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{GREEDYDATA}clean_bed%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{BASE10NUM:count_clean_bed;int}",
+        "named_captures_only": true
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "AI Core Smoothing - Unclean Bed Count",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "counts",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{GREEDYDATA}unclean_bed%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{BASE10NUM:count_unclean_bed;int}",
+        "named_captures_only": true
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    },
+    {
+      "title": "AI Core Smoothing - Occupied Bed Count",
+      "extractor_type": "grok",
+      "converters": [],
+      "order": 0,
+      "cursor_strategy": "copy",
+      "source_field": "counts",
+      "target_field": "",
+      "extractor_config": {
+        "grok_pattern": "%{GREEDYDATA}occupied_bed%{NOTSPACE}%{SPACE}%{NOTSPACE}%{SPACE}%{BASE10NUM:count_occupied_bed;int}",
+        "named_captures_only": true
+      },
+      "condition_type": "none",
+      "condition_value": ""
+    }
+  ],
+  "version": "3.1.3"
+}

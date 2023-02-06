@@ -1,0 +1,45 @@
+---
+- name: stop docker
+  block:
+    - name: stop docker (Debian based)
+      block:
+        - name: stop service docker on debian, if running
+          systemd: name=docker state=stopped
+        - name: stop service docker.socket on debian, if running
+          systemd: name=docker.socket state=stopped
+      when: ansible_pkg_mgr == "apt"
+  
+    - name: stop docker (CentOS based)
+      block:
+        - name: stop service docker on CentOS, if running
+          service:
+            name: docker
+            state: stopped
+        - name: stop service docker.socket on CentOS, if running
+          service:
+            name: docker
+            state: stopped
+      when: ansible_pkg_mgr == "yum"
+ 
+- name: start docker
+  block:
+
+    - name: start docker (Debian based)
+      block:
+        - name: start service docker on debian, if running
+          systemd: name=docker state=started
+        - name: start service docker.socket on debian, if running
+          systemd: name=docker.socket state=started
+      when: ansible_pkg_mgr == "apt"
+
+    - name: start docker (CentOS based)
+      block:
+        - name: start service docker on CentOS, if running
+          service:
+            name: docker
+            state: started
+        - name: start service docker.socket on CentOS, if running
+          service:
+            name: docker
+            state: started
+      when: ansible_pkg_mgr == "yum"

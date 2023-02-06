@@ -1,0 +1,107 @@
+---
+- name: Load Zone Variables
+  include_vars: zones.yml
+
+- name: Load Resoruce Record Variables
+  include_vars: records.yml
+
+- name: Generate forward zone file
+  template:
+    src: "zone.forward.j2"
+    dest: "/var/named/{{ item }}zone"
+    owner: root
+    group: named
+    validate: 'named-checkzone {{ item }} %s'
+  loop: "{{ bind_forward_zones }}"
+  notify:
+    - restart bind
+  when: ansible_facts["distribution_file_variety"] == "RedHat"
+
+- name: Generate named.conf 
+  template: 
+    src: named.conf.j2 
+    dest: /etc/named.conf 
+    owner: named 
+    group: named 
+    validate: 'named-checkconf %s'
+  notify:
+    - restart bind
+  when: ansible_facts["distribution_file_variety"] == "RedHat" 
+
+- name: Generate named.conf.local for
+  template:
+    src: named.conf.local.j2
+    dest: /etc/bind/named.conf.local
+    owner: bind
+    group: bind
+    validate: 'named-checkconf %s'
+  notify:
+    - restart bind
+  when: ansible_facts["distribution_file_variety"] == "Debian"
+
+- name: Generate named.conf.local for
+  template:
+    src: named.conf.options.j2
+    dest: /etc/bind/named.conf.options
+    owner: bind
+    group: bind
+    validate: 'named-checkconf %s'
+  notify:
+    - restart bind
+  when: ansible_facts["distribution_file_variety"] == "Debian"
+
+- name: Generate forward zone file 
+  template: 
+    src: "zone.forward.j2"
+    dest: "/var/named/{{ item }}zone"
+    owner: root
+    group: named
+    validate: 'named-checkzone {{ item }} %s'
+  loop: "{{ bind_forward_zones }}"
+  notify:
+    - restart bind
+  when: ansible_facts["distribution_file_variety"] == "RedHat"
+
+- name: Generate forward zone file
+  template:
+    src: "zone.forward.j2"
+    dest: "/etc/bind/db.{{ item }}"
+    owner: root
+    group: bind
+    validate: 'named-checkzone {{ item }} %s'
+  loop: "{{ bind_forward_zones }}"
+  notify:
+    - restart bind
+  when: ansible_facts["distribution_file_variety"] == "Debian"
+
+- name: Generate reverse zone file
+  template:
+    src: zone.reverse.j2 
+    dest: /var/named/{{ item }}zone
+    owner: root
+    group: named
+    validate: 'named-checkzone {{ item }} %s'
+  loop: "{{ bind_reverse_zones }}"
+  notify:
+    - restart bind 
+  when: ansible_facts["distribution_file_variety"] == "RedHat"
+
+- name: Generate reverse zone file
+  template:
+    src: zone.reverse.j2
+    dest: /etc/bind/db.{{ item }}
+    owner: root
+    group: bind
+    validate: 'named-checkzone {{ item }} %s'
+  loop: "{{ bind_reverse_zones }}"
+  notify:
+    - restart bind
+  when: ansible_facts["distribution_file_variety"] == "Debian"
+
+
+- name: Disable IPv6 support
+  lineinfile: dest=/etc/sysconfig/named line='OPTIONS="-4"' regexp="^OPTIONS" 
+  notify:
+    - restart bind
+  when: ansible_facts["distribution_file_variety"] == "RedHat"
+

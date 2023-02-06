@@ -1,0 +1,17 @@
+---
+primary_name_server: lab-dns-01 
+zone_name: darvis.lab
+ip4_listen_on: 192.168.50.99
+bind_acl_name: darvis_lan
+allow_query_from: "192.168.50.0/24"
+bind_allow_recursion: "yes"
+bind_dnssec_enable: "yes" 
+bind_dnssec_validation: "auto"
+bind_config_directory: "/etc/named"
+bind_data_directory: "/etc/named"
+bind_querylog: "no" 
+bind_forward: only 
+bind_allow_update: none
+bind_forwarders:
+ - 8.8.8.8
+ - 1.1.1.1

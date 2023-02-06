@@ -1,0 +1,121 @@
+---
+# tasks file for install-docker
+
+- name: Install Docker (Debian based) 
+  block:
+    - name: Update cache
+      action: apt update_cache=yes
+    
+    - name: Install packages (Debian based)
+      action: apt pkg='{{ item }}' state=present
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+
+    - name: Add GPG key
+      shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+    - name: Add the Docker repository to APT source
+      shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+    - name: Update cache (Debian based)
+      action: apt update_cache=yes
+
+    - name: Install packages (Debian based)
+      action: apt pkg='docker-ce' state=present
+
+  when: ansible_distribution_release == "jammy"
+
+- name: Install Docker (Debian based) 
+  block:
+
+    - name: Update cache
+      action: apt update_cache=yes
+    
+    - name: Install packages (Debian based)
+      action: apt pkg='{{ item }}' state=present
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg-agent
+        - software-properties-common
+        - gcc
+        - make
+        - redis-tools
+    
+    - name: Add GPG key
+      shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    
+    - name: Add fingerprint
+      shell: apt-key fingerprint 0EBFCD88
+    
+    - name: Add repository
+      shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    
+    - name: Update cache (Debian based)
+      action: apt update_cache=yes
+    
+    - name: Install packages (Debian based)
+      action: apt pkg='{{ item }}' state=present
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+    
+    - name: 
+      shell: echo "blacklist nouveau" > /etc/modprobe.d/blacklist-nvidia-nouveau.conf
+    
+    - name: 
+      shell: echo "options nouveau modeset=0" >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf
+    
+    - name: Mount the real rootfs which has all your data
+      shell: update-initramfs -u
+    
+  when: ansible_distribution_release == "focal"
+
+
+# https://docs.docker.com/engine/install/centos/
+
+- name: Install Docker (CentOS based)
+  block:
+
+    - name: Remove Docker packages (CentOS based)
+      action: yum name='{{ item }}' state=absent
+      loop:
+        - docker-client
+        - docker-client-latest
+        - docker-common
+        - docker-latest
+        - docker-latest-logrotate
+        - docker-logrotate
+        - docker-engine
+
+    - name: Install packages (CentOS based)
+      action: yum name=yum-utils state=present
+
+    - name: Add repository
+      command: sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+    - name: Update cache (CentOS based)
+      action: yum update_cache=yes
+
+    - name: Install Docker packages (CentOS based)
+      action: yum name='{{ item }}' state=present
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+
+  when: ansible_pkg_mgr == "yum"
+
+- name: Add user to Docker group
+  shell: usermod -a -G docker "{{ user }}"
+
+- name: Install docker-compose
+  get_url:
+    url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: 0755

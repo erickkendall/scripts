@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "Zanbeel"
+version = "0.0.0"
+description = ""
+authors = ["Ayub <mak@darvis.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+pyarmor = "6.4.0"
+
+[tool.black]
+    py37 = true
+    line-length = 88
+    include = '\.pyi?$'
+    exclude = '''
+    /(
+        \.git
+      | \.hg
+      | \.mypy_cache
+      | \.tox
+      | \.venv
+      | _build
+      | buck-out
+      | build
+      | dist
+
+      # The following are specific to Black, you probably don't want those.
+      | blib2to3
+      | tests/data
+    )/
+  '''

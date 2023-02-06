@@ -1,0 +1,24 @@
+---
+# tasks file for install-node-exporter
+- name: Add the user 'node_exporter'
+  user:
+    name: node_exporter
+    shell: /bin/false
+
+- name: Copy node exporter executable
+  copy:
+    src: node_exporter
+    dest: /usr/local/bin
+    owner: node_exporter
+    group: node_exporter
+    mode: '0755'
+
+- name: Copy node exporter startup script
+  copy:
+    src: node_exporter.service
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+    mode: '0644'
+  notify: 
+    - start node_exporter

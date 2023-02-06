@@ -1,0 +1,18 @@
+---
+# tasks file for test
+- name: Create backup directory
+  file:
+    path: /home/darvis/blue
+    state: directory
+    owner: darvis
+    group: darvis
+    mode: '0755'
+
+- name: Copy backup script and set permissions
+  copy:
+    src: fileone
+    dest: /home/darvis
+    owner: darvis
+    group: darvis
+    mode: '0755'
+

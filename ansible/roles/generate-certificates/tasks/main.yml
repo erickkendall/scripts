@@ -1,0 +1,108 @@
+---
+# tasks file for generate-certificates
+- name: Install packages
+  block:
+
+  - name: Install packages (Debian based)
+    block:
+
+      - name: Update cache (Debian based)
+        action: apt update_cache=yes
+
+      - name: debug
+        debug:
+          msg: "Debian based OS."
+
+      - name: Install curl and unzip (Debian based)
+        action: apt pkg='{{ item }}' state=present
+        loop:
+          - libnss3-tools
+          - wget
+    when: ansible_pkg_mgr == "apt"
+
+  - name: Install packages (Centos based)
+    block:
+
+      - name: Update cache (CentOS based)
+        action: yum update_cache=yes
+
+      - name: debug
+        debug:
+          msg: "CentoOS based OS."
+
+      - name: Install curl and unzip (CentOS based)
+        action: yum name='{{ item }}' state=present
+        loop:
+          - wget
+    when: ansible_pkg_mgr == "yum"
+
+- name: create certs directory
+  file:
+    path: /etc/certs
+    state: directory
+    mode: '0755'
+  
+- name: Generate Self Signed Certificate
+  block:
+
+    - name: Download mkcert to /usr/local/bin
+      get_url:
+        url: https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
+        dest: /usr/local/bin/mkcert
+        mode: 0775
+
+    - name: Install the local CA in the system trust store.
+      command: /usr/local/bin/mkcert -install
+
+    - name: Print warning 
+      debug:
+        msg: "Warning: the rootCA-key.pem file that mkcert automatically generates gives complete power to intercept secure requests from your machine. Do not share it."
+
+    - name: Install the local CA in the system trust store.
+      shell: /usr/local/bin/mkcert localhost auth config historian 0.0.0.0 127.0.0.1
+ 
+    - name: Copy files to /etc/certs
+      block:
+    
+        - name: Create certs directory
+          file:
+            path: /etc/certs
+            state: directory
+            mode: '0755'
+    
+        - name: Move to key /etc/certs
+          copy:
+            src: "/home/{{ user }}/localhost+5-key.pem"
+            dest: /etc/certs/key.pem
+            remote_src: yes
+            owner: root
+            group: root
+            mode: '0644'
+    
+        - name: Move cert to /etc/certs
+          copy:
+            src: "/home/{{ user }}/localhost+5.pem"
+            dest: /etc/certs/cert.pem
+            remote_src: yes
+            owner: root
+            group: root
+            mode: '0644'
+    
+        - name: copy rootCA.pem
+          copy:
+            src: /root/.local/share/mkcert/rootCA.pem 
+            dest: /etc/certs/rootCA.pem 
+            remote_src: yes
+            owner: root
+            group: root
+            mode: '0644'
+
+        - name: Remove local key file
+          file:
+            path: "/home/{{ user }}/localhost+5-key.pem"
+            state: absent
+
+        - name: Remove local cert file
+          file:
+            path: "/home/{{ user }}/localhost+5.pem"
+            state: absent

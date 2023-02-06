@@ -1,0 +1,80 @@
+---
+# tasks file for generate-certificates
+- name: Install packages
+  block:
+
+  - name: Install packages (Debian based)
+    block:
+
+      - name: Update cache (Debian based)
+        action: apt update_cache=yes
+
+      - name: debug
+        debug:
+          msg: "Debian based OS."
+
+      - name: Install curl and unzip (Debian based)
+        action: apt pkg='{{ item }}' state=present
+        loop:
+          - python3
+          - python3-pip
+          - curl
+    when: ansible_pkg_mgr == "apt"
+
+  - name: Install packages (Centos based)
+    block:
+
+      - name: Update cache (CentOS based)
+        action: yum update_cache=yes
+
+      - name: debug
+        debug:
+          msg: "CentoOS based OS."
+
+      - name: Install curl and unzip (CentOS based)
+        action: yum name='{{ item }}' state=present
+        loop:
+          - python3
+          - python3-pip
+          - curl
+    when: ansible_pkg_mgr == "yum"
+
+- name: Upgrade pip
+  command: pip3 install pip --upgrade
+
+- name: Install pyOpenSSL
+  command: pip3 install pyOpenSSL
+
+- name: create certs directory
+  file:
+    path: /etc/certs
+    state: directory
+    mode: '0755'
+  
+- name: Generate Self Signed Certificate
+  block:
+
+    - name: Generate an OpenSSL private key
+      openssl_privatekey:
+        path: "/etc/certs/privkey.pem"
+        size: 2048
+        type: DSA
+        backup: yes
+
+
+    - name: Generate an OpenSSL Certificate Signing Request with Subject information
+      openssl_csr:
+        path: "/etc/certs/
+        privatekey_path: "/etc/certs/privkey.pem"
+        country_name: "{{ country_name }}"
+        organization_name: "{{ organization_name }}"
+        email_address: "{{ email_address }}"
+        common_name: "{{ server_hostname }}"
+
+
+    - name: Generate a Self Signed OpenSSL certificate
+      openssl_certificate:
+        path: "/etc/certs/cert.pem"
+        privatekey_path: "/etc/certs/privkey.pem"
+        csr_path: "/etc/certs/{{ server_hostname }}.csr"
+        provider: selfsigned

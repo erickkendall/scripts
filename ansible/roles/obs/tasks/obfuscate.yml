@@ -1,0 +1,43 @@
+---
+
+
+- name: Obfuscation
+  block: 
+    
+    - name: Advanced obfuscation
+      block:
+
+        - name: Display using advanced obfuscation
+          debug:
+            msg: "Advanced obfuscaton of {{ item }}"
+
+        - name: Obfuscate services
+          shell: python3 -m poetry run pyarmor obfuscate --advanced 2 --recursive services/{{ item }}/app/main.py
+      when: item!="superdetector" and item!="ai_core"
+
+    - name: Normal obfuscation
+      block:
+        - name: Display using normal obfuscation
+          debug:
+            msg: "Normal obfuscation of {{ item }}"
+        - name: Obfuscate services
+          shell: pyarmor obfuscate --recursive services/{{ item }}/app/main.py
+      when: item=="superdetector" or item=="ai_core"
+
+- name: Remove services
+  file:
+    path: services/{{ item }}/app/
+    state: absent
+
+- name: Copy dist to service
+  copy:
+    src: dist/
+    dest: services/{{ item }}/app/
+  tags:
+    - dircontent
+    - dir_not_exist
+
+- name: Remove dist
+  file:
+    path: dist/
+    state: absent

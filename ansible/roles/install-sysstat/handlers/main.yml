@@ -1,0 +1,21 @@
+---
+# handlers file for install-ntp
+- name: Start sysstat
+  service:
+    name: sysstat
+    state: started
+
+- name: Stop sysstat
+  service:
+    name: sysstat
+    state: stopped
+
+- name: Restart sysstat
+  service:
+    name: sysstat
+    state: restarted
+
+- name: Enable sysstat
+  service:
+    name: sysstat
+    enabled: yes

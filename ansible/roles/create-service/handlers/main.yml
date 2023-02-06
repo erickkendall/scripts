@@ -1,0 +1,7 @@
+---
+# handlers file for create_service
+- name: Reload Zanbeel
+  ansible.builtin.service:
+    name: zanbeel
+    state: reloaded
+    enabled: yes

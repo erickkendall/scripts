@@ -1,0 +1,28 @@
+---
+# tasks file for installing Python3 and Virtual Environment
+
+- name: Install Python3 and Virtual Environment (Debian based) 
+  block:
+
+    - name: Update cache (Debian based)
+      action: apt update_cache=yes
+    
+    - name: Install packages (Debian based)
+      action: apt pkg='{{ item }}' state=present
+      loop:
+        - python3
+        - python3-venv
+  when: ansible_pkg_mgr == "apt"
+
+- name: Install Python3 and Virtual Environment (CentOS based) 
+  block:
+
+    - name: Update cache (CentOS based)
+      action: yum update_cache=yes
+
+    - name: Install packages (CentOS based)
+      action: yum name='{{ item }}' state=present
+      loop:
+        - python3
+        - python3-venv
+  when: ansible_pkg_mgr == "yum"

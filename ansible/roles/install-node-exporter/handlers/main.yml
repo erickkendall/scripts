@@ -1,0 +1,7 @@
+---
+# handlers file for install-node-exporter
+- name: start node_exporter
+  service:
+    name: node_exporter
+    state: started
+    enabled: yes

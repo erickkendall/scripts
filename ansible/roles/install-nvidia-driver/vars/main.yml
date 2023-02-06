@@ -1,0 +1,3 @@
+---
+# vars file for install-nvidia-driver
+nvidia-driver-version: "nvidia-utils-515-server"

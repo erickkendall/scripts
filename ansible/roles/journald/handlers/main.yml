@@ -1,0 +1,16 @@
+---
+# handlers file for journald
+- name: Start journald
+  service:
+    name: systemd-journald.service
+    state: started
+
+- name: Stop journald
+  service:
+    name: systemd-journald.service
+    state: stopped
+
+- name: Restart journald
+  service:
+    name: systemd-journald.service
+    state: restarted

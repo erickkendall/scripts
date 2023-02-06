@@ -1,0 +1,38 @@
+; Authoritative data for {{ zone_name }} forward zone
+;
+
+$ORIGIN {{ item }}.
+$TTL {{ soa_values.ttl }}
+
+@   IN SOA  {{ soa_values.primary_name_server }}.{{ zone_name }}.  {{ soa_values.email }}.{{ zone_name }}. (
+                                       {{ "%-12s"|format(soa_values.serial) }}  ; serial
+                                       {{ "%-12s"|format(soa_values.refresh) }}  ; refresh
+                                       {{ "%-12s"|format(soa_values.retry) }}  ; retry
+                                       {{ "%-12s"|format(soa_values.expire) }}  ; expire
+                                       {{ "%-12s"|format(soa_values.minimum) }}  ; minimum
+)
+
+{% for ns in name_servers %}
+                   IN      NS       {{ ns.bind_dns_name }}.{{ item }}.
+{% endfor %}
+
+{% for ns in name_servers %}
+{{ "%-16s"|format(ns.bind_dns_name) }}    IN      A        {{ ns.ip }}
+{% endfor %}
+
+
+;Servers
+{% for server in servers %}
+{{ "%-16s"|format(server.bind_dns_name) }}    IN      {{ "%-5s"|format(server.resource_record) }}    {{ "%-15s"|format(server.ip) }} ; {{ server.description }}
+{% endfor %}
+
+;Cameras
+{% for camera in cameras %}
+{{ "%-16s"|format(camera.bind_dns_name) }}    IN      {{ "%-5s"|format(camera.resource_record) }}    {{ "%-15s"|format(camera.ip) }} ; {{ camera.description }}
+{% endfor %}
+
+;Network Devices
+{% for device in network_devices %}
+{{ "%-16s"|format(device.bind_dns_name) }}    IN      {{ "%-5s"|format(device.resource_record) }}    {{ "%-15s"|format(device.ip) }} ; {{ device.description }}
+{% endfor %}
+

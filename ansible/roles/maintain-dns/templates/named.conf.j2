@@ -1,0 +1,48 @@
+options {
+	listen-on port 53 { 127.0.0.1; {{ ip4_listen_on }}; };
+	#listen-on-v6 port 53 { ::1; };
+	directory 	"{{ bind_data_directory }}";
+	dump-file 	"/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+	allow-query     { localhost; {{ allow_query_from }}; };
+	recursion {{ bind_allow_recursion }};
+
+	dnssec-enable {{ bind_dnssec_enable }};
+	dnssec-validation {{ bind_dnssec_validation }};
+
+	/* Path to ISC DLV key */
+	bindkeys-file "/etc/named.iscdlv.key";
+
+	managed-keys-directory "/var/named/dynamic";
+};
+
+logging {
+        channel default_debug {
+                file "data/named.run";
+                severity dynamic;
+        };
+};
+
+{% for item in bind_forward_zones  %}
+zone "{{item}}." IN {
+   type master;
+   file "{{item}}.zone";
+};
+{% endfor %}
+
+{% for item in bind_reverse_zones  %}
+zone "{{ item }}" IN {
+   type master;
+   file "{{ item }}.zone";
+};
+{% endfor %}
+
+
+zone "." IN {
+	type hint;
+	file "named.ca";
+};
+
+include "/etc/named.rfc1912.zones";
+include "/etc/named.root.key";

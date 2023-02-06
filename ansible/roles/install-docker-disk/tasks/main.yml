@@ -1,0 +1,6 @@
+---
+- name: test
+  command: echo "Stopping docker" 
+  notify:
+    - stop docker
+    - start docker

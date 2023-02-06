@@ -1,0 +1,27 @@
+---
+# tasks file for install-nvidia-driver (Debian based)
+
+- name: Check if NVIDIA driver is installed
+  command: nvidia-smi -L
+  register: result
+  ignore_errors: true
+ 
+- name: Check if NVIDIA driver is installed
+  block:
+
+    - name: nvidia driver has not been installed
+      debug:
+        msg: "NVIDIA driver will be installed."
+
+    - name: Install NVIDIA driver
+      block:
+  
+        - name: Install the Nvidia driver
+          apt:
+            name: "{{ nvidia-driver-version }}"
+            state: present
+  
+        - name: Unconditionally reboot the machine with all defaults
+          reboot:
+  
+  when: result.rc != 0

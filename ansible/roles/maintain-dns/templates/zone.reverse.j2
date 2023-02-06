@@ -1,0 +1,43 @@
+; Authoritative data for {{ zone_name }} resverse zone
+;
+
+$ORIGIN {{ item }}.
+$TTL {{ soa_values.ttl }}
+
+@   IN SOA  {{ soa_values.primary_name_server }}.{{ zone_name}}. {{ soa_values.email }}.{{ zone_name }}. (
+                                {{ "%-12s"|format(soa_values.serial) }}  ; serial
+                                {{ "%-12s"|format(soa_values.refresh) }}  ; refresh
+                                {{ "%-12s"|format(soa_values.retry) }}  ; retry
+                       		{{ "%-12s"|format(soa_values.expire) }}  ; expire
+	                        {{ "%-12s"|format(soa_values.minimum) }}  ; minimum
+)
+
+{% for ns in name_servers %}
+            IN      NS      {{ ns.bind_dns_name }}.{{ zone_name }}.
+{% endfor %}
+
+{% for ns in name_servers %}
+{{ "%-10s"|format(ns.ip.split('.')[-1]) }}  IN      PTR     {{ ns['bind_dns_name']|lower }}.{{ zone_name }}.
+{% endfor %}
+
+;Servers
+{% for server in servers %}
+{% if server.resource_record == "A" %}
+{{ "%-10s"|format(server.ip.split('.')[-1]) }}  IN      PTR     {{ server['bind_dns_name']|lower }}.{{ zone_name }}.
+{% endif %}
+{% endfor %}
+
+;Cameras
+{% for camera in cameras %}
+{% if camera.resource_record == "A" %}
+{{ "%-10s"|format(camera.ip.split('.')[-1]) }}  IN      PTR     {{ camera['bind_dns_name']|lower }}.{{ zone_name }}.
+{% endif %}
+{% endfor %}
+
+;Network Devices
+{% for device in network_devices %}
+{% if device.resource_record == "A" %}
+{{ "%-10s"|format(device.ip.split('.')[-1]) }}  IN      PTR     {{ device['bind_dns_name']|lower }}.{{ zone_name }}.
+{% endif %}
+{% endfor %}
+

@@ -1,0 +1,54 @@
+---
+# tasks file for install-backup
+#
+- name: Check whether docker-compose.yml exists
+  stat:
+    path: "/home/{{ user }}/zanbeel/docker-compose.yml"
+  register: register_name
+
+- name: Do nothing if Zanbeel is not installed
+  debug:
+    msg: "{{ ansible_hostname }} does not have Zanbeel installed."
+  when: not register_name.stat.exists
+
+- name: Setup backup environment
+  block:
+
+    - name: Create backup directory
+      file:
+        path: "/home/{{ user }}/backups"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: '0755'
+
+    - name: Copy backup script and set permissions
+      copy:
+        src: backupvolume.py
+        dest: "/home/{{ user }}"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: '0755'
+
+    - name: Copy requirements.txt
+      copy:
+        src: requirements.txt
+        dest: "/home/{{ user }}"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: '0644'
+
+    - name: Install specified python requirements in indicated (virtualenv)
+      pip:
+        requirements: "/home/{{ user }}/requirements.txt"
+        virtualenv: "/home/{{ user }}/backup"
+
+    - name: Schedule backup
+      cron:
+        name: "backup volumes"
+        user: "{{ user }}"
+        minute: "30"
+        hour: "16"
+        job: "source /home/{{ user }}/backup/bin/activate ; python3 /home/{{ user }}/backupvolume.py ; deactivate"
+    
+  when: register_name.stat.exists

@@ -1,0 +1,60 @@
+---
+# tasks file for install-zanbeel
+
+- name: show user name
+  debug:
+    msg: "{{ user }}"
+
+- name: Create volumes
+  command: docker volume create "{{ item }}"
+  loop: "{{ volumes }}"
+
+- name: Create Zanbeel folder
+  file:
+    path: "/home/{{ user }}/zanbeel/"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: '0755'
+
+- name: Create service folder
+  template:
+    src: env.j2
+    dest: "/home/{{ user }}/zanbeel/services/"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0755
+
+- name: Create .env file
+  template:
+    src: env.j2
+    dest: "/home/{{ user }}/zanbeel/.env"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0640
+
+- name: Create docker-compose.yml file
+  template:
+    src: docker-compose.j2
+    dest: "/home/{{ user }}/zanbeel/docker-compose.yml"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0640
+
+  
+- name: Log into AWS ECR
+  shell: export AWS_ACCESS_KEY_ID="{{ AWS_ACCESS_KEY }}"; export AWS_SECRET_ACCESS_KEY="{{ AWS_SECRET_ACCESS_KEY }}"; docker login -u AWS -p $(aws ecr get-login-password --region {{ region }}) {{ DOCKER_REGISTRY }}
+      
+- name: Pull docker images
+  command: docker-compose pull
+  args:
+    chdir: "/home/{{ user }}/zanbeel"
+  
+- name: Copy Graylog
+  copy:
+    src: services
+    dest: "/home/{{ user }}/zanbeel/"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: '0755'
+    backup: yes

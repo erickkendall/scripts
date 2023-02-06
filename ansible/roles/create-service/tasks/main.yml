@@ -1,0 +1,15 @@
+---
+# tasks file for create_service
+
+- name: Copy service configuration
+  copy:
+    src: zanbeel.service
+    dest: /etc/systemd/system
+ 
+- name: Enable Zanbeel service
+  systemd:
+    name: zanbeel
+    daemon_reload: yes
+    enabled: yes
+    state: started
+

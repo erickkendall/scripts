@@ -1,0 +1,19 @@
+---
+- name:
+  hosts: 'all'
+  become: yes
+
+  vars:
+    user: "{{ user_name }}"
+    volumes: [ "mongo_data", "es_data", "graylog_journal", "config_data", "prometheus_data", "grafana_data", "license", "tsdb_data" ]
+
+  tasks:
+  - name: create Docker volumes
+    command: docker volume create "{{ item }}"
+    loop: "{{ volumes }}" 
+   
+  roles:
+     - install-docker
+     - install-nvidia-docker2
+     - generate-certificates
+     - install-awscli

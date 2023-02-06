@@ -1,0 +1,27 @@
+---
+# tasks file for install-ntp
+
+- name: Install NTP (Debian based)
+  block:
+
+    - name: Update cache (Debian based)
+      action: apt update_cache=yes
+
+    - name: Install NTP package (Debian based)
+      action: apt pkg="ntp" state=present
+      notify:
+        - Start NTP
+        - Enable NTP
+
+  when: ansible_pkg_mgr == "apt"
+
+- name: Install NTP (CentOS based)
+  block:
+
+    - name: upgrade all packages
+      yum: name=* state=latest
+
+    - name: Install NTP package (CentOS based)
+      action: yum name="ntp" state=present
+
+  when: ansible_pkg_mgr == "yum"

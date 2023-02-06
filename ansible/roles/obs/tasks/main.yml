@@ -1,0 +1,35 @@
+- name: Install Dependencies
+  block:
+
+    - name: Install OS packages (CentOS based)
+      action: yum name='{{ item }}' state=present
+      loop:
+        - python3
+        - python3-setuptools
+        - python3-toml
+      when: ansible_pkg_mgr == "yum"
+
+    - name: Install Python packages (Debian based)
+      action: apt pkg='{{ item }}' state=present
+      loop:
+        - python3
+        - python3-setuptools
+        - python3-toml
+      when: ansible_pkg_mgr == "apt"
+
+- name: Install Pip packages
+  pip:
+    name: '{{ item }}'
+  loop:
+    - pyproject-toml
+    - setuptools-rust
+
+- name: Install Poetry python package
+  shell: python3 -m poetry install
+
+- name: Register Pyarmar
+  shell: python3 -m poetry run pyarmor register pyarmor-regfile-1.zip
+
+- name: Obfuscate services
+  include_tasks: obfuscate.yml
+  loop: "{{ services }}"

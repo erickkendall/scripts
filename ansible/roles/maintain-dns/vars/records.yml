@@ -1,0 +1,33 @@
+---
+name_servers:
+  - { bind_dns_name: lab-dns-01, ip: 192.168.50.99 } 
+
+servers:
+  - { bind_dns_name: lab-nas-01, resource_record: A, ip: 192.168.50.11, description: lab-nas-01 } 
+  - { bind_dns_name: darvis-NUC8i3BEH, resource_record: A, ip: 192.168.50.99, description: DNS NUC }
+  - { bind_dns_name: tele, resource_record: CNAME, ip: lab-dns-01, description: teleport server }
+  - { bind_dns_name: lab-tur-01, resource_record: A, ip: 192.168.50.92, description: darvis-lambda-vector }
+  - { bind_dns_name: lab-mlr-01, resource_record: A, ip: 192.168.50.154, description: usps mailroom }
+  - { bind_dns_name: lab-fal-01, resource_record: A, ip: 192.168.50.37, description: fall prevention laptop }
+  - { bind_dns_name: lab-mlr-02, resource_record: A, ip: 192.168.50.209, description: prod mailroom demo }
+  - { bind_dns_name: lab-rac-01, resource_record: A, ip: 192.168.50.205, description: RAC dashboard }
+  - { bind_dns_name: lab-vms-01, resource_record: A, ip: 192.168.50.222, description: Lamda VM Server } 
+  - { bind_dns_name: lab-mlr-03, resource_record: A, ip: 192.168.50.204, description: NUC USPS Demo }
+  - { bind_dns_name: lab-dev-01, resource_record: A, ip: 192.168.50.128, description: First VM Guest - Nexus API }
+  - { bind_dns_name: lab-dev-02, resource_record: A, ip: 192.168.50.138, description: Second VM Guest - Usama Pipeline }
+  - { bind_dns_name: lab-ans-01, resource_record: A, ip: 192.168.50.90, description: Ansible/Logging Server }
+  - { bind_dns_name: gitlab-01, resource_record: A, ip: 192.168.50.57, description: Gitlab server }
+  - { bind_dns_name: lab-tkt-01, resource_record: A, ip: 192.168.50.20, description: Request Tracker } 
+
+cameras:
+  - { bind_dns_name: cam-axis-01, resource_record: A, ip: 192.168.50.33, description: axis 360 fixed }
+  - { bind_dns_name: cam-surg-01, resource_record: A, ip: 192.168.50.42, description: axis m1124 surgery }
+  - { bind_dns_name: cam-axis-03, resource_record: A, ip: 192.168.50.89, description: axis ptz pole }
+  - { bind_dns_name: cam-axis-04, resource_record: A, ip: 192.168.50.144, description: axis q17860-le dock left }
+  - { bind_dns_name: cam-mlrm-01, resource_record: A, ip: 192.168.50.198, description: axis mailroom }
+  - { bind_dns_name: cam-bosc-01, resource_record: A, ip: 192.168.50.237, description: bosch camera }
+  - { bind_dns_name: cam-axis-06, resource_record: A, ip: 192.168.50.252, description: axis q17860-le dock right } 
+
+
+network_devices:
+  - { bind_dns_name: rtr-pri, resource_record: A, ip: 192.168.50.1, description: asus internet router }

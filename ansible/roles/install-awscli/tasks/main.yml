@@ -1,0 +1,72 @@
+---
+# tasks file for install-awscli
+
+- name: Install packages
+  block:
+
+  - name: Install packages (Debian based)
+    block:
+
+      - name: Update cache (Debian based)
+        action: apt update_cache=yes
+
+      - name: Install curl and unzip (Debian based)
+        action: apt pkg='{{ item }}' state=present
+        loop:
+          - curl
+          - unzip
+
+    when: ansible_pkg_mgr == "apt"
+
+  - name: Install packages (Centos based)
+    block:
+
+      - name: Update cache (CentOS based)
+        action: yum update_cache=yes
+
+      - name: Install curl and unzip (CentOS based)
+        action: yum name='{{ item }}' state=present
+        loop:
+          - curl
+          - unzip
+
+    when: ansible_pkg_mgr == "yum"
+
+- name: Install AWS CLI
+  block:
+    
+    - name: Download AWS CLI to home directory
+      get_url:
+        url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+        dest: ~/awscliv2.zip
+        mode: 0644
+    
+    - name: Extract awscli2.zip
+      unarchive:
+        src: ~/awscliv2.zip
+        dest: ~/
+        remote_src: true
+    
+    - name: Install AWS CLI
+      command: ~/aws/install --update
+    
+    - name: Remove zip file from home directory
+      file:
+        path: ~/awscliv2.zip
+        state: absent
+        
+- name: Create AWS configuration diretory
+  file:
+    path: "/home/{{ user }}/.aws"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: '0755'
+
+- name: Copy AWS credentials file
+  copy:
+    src: aws-credentials.txt
+    dest: "/home/{{ user }}/.aws/credentials"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: '0644'

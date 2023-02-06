@@ -1,0 +1,20 @@
+---
+# defaults file for install-zanbeel
+PROJECT: usps
+DATABASE: usps
+CERT_DIR: /etc/certs
+CONFIG_BUCKET: darvis-config-backup
+CONFIG_AWS_ACCESS_KEY_ID: ""
+CONFIG_AWS_SECRET_ACCESS_KEY: ""
+SENDER_PASSWORD: ""
+ENV_GRAFANA_ADMIN_PASSWORD: ""
+
+volumes:
+  - mongo_data
+  - es_data
+  - graylog_journal
+  - config_data
+  - prometheus_data
+  - grafana_data
+  - license
+  - tsdb_data

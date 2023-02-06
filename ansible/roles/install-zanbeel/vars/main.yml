@@ -1,0 +1,6 @@
+---
+# vars file for install-zanbeel
+DOCKER_REGISTRY: "787520304046.dkr.ecr.eu-central-1.amazonaws.com"
+region: "eu-central-1"
+AWS_ACCESS_KEY: ""
+AWS_SECRET_ACCESS_KEY: ""

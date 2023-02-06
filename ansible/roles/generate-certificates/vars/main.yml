@@ -1,0 +1,11 @@
+---
+# vars file for generate-certificates
+
+server_hostname: "localhost"
+size: 4096
+type: DSA
+country_name: "US"
+organization_name: "IT"
+email_address: "admin@localhost"
+common_name: "localhost"
+user: "darvis"

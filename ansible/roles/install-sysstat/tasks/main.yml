@@ -1,0 +1,36 @@
+---
+# tasks file for install-sysstat
+
+- name: Install sysstat (Debian based)
+  block:
+
+    - name: Update cache (Debian based)
+      action: apt update_cache=yes
+
+    - name: Install NTP package (Debian based)
+      action: apt pkg="sysstat" state=present
+      notify:
+        - Start sysstat
+        - Enable sysstat
+
+  when: ansible_pkg_mgr == "apt"
+
+- name: Install sysstat (CentOS based)
+  block:
+
+    - name: upgrade all packages
+      yum: name=* state=latest
+
+    - name: Install NTP package (CentOS based)
+      action: yum name="sysstat" state=present
+
+  when: ansible_pkg_mgr == "yum"
+
+- name: copy sysstat configuration file
+  copy:
+    src: ./sysstat.txt
+    dest: /etc/default/sysstat
+    owner: root
+    group: root
+    mode: '0644'
+

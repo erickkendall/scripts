@@ -1,0 +1,10 @@
+---
+soa_values:
+  serial: "{{ ansible_date_time.epoch }}"
+  refresh: 1D 
+  retry: 1H 
+  expire: 1W 
+  minimum: 3H 
+  ttl: 1D
+  primary_name_server: lab-dns-01
+  email: hostmaster

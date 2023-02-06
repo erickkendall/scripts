@@ -1,0 +1,19 @@
+[Unit]
+Description=zanbeel
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+User=darvis
+Group=docker
+WorkingDirectory=/home/darvis/zanbeel
+# Shutdown container (if running) when unit is started
+ExecStartPre=/usr/local/bin/docker-compose -f docker-compose.yml down
+# Start container when unit is started
+ExecStart=/usr/local/bin/docker-compose -f docker-compose.yml up
+# Stop container when unit is stopped
+ExecStop=/usr/local/bin/docker-compose -f docker-compose.yml down
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,21 @@
+---
+# handlers file for install-ntp
+- name: Start NTP
+  service:
+    name: ntp
+    state: started
+
+- name: Stop NTP
+  service:
+    name: ntp
+    state: stopped
+
+- name: Restart NTP
+  service:
+    name: ntp
+    state: restarted
+
+- name: Enable NTP
+  service:
+    name: ntp
+    enabled: yes

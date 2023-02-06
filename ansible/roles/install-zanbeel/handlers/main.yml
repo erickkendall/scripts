@@ -1,0 +1,16 @@
+---
+# handlers file for install-zanbeel
+- name: Start Zanbeel
+  service:
+    name: zanbeel
+    state: started
+
+- name: Stop Zanbeel
+  service:
+    name: zanbeel
+    state: stopped
+
+- name: Restart Zanbeel
+  service:
+    name: zanbeel
+    state: restarted

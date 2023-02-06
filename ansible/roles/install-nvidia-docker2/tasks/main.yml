@@ -1,0 +1,89 @@
+---
+# tasks file for install-nvidia-docker2
+
+- name: Install required packages
+  block:
+
+    - name: Install wget package (CentOS based)
+      action: yum name='{{ item }}' state=latest
+      loop:
+        - curl
+        - libnss3-tools
+      when: "'$ansible_pkg_mgr' == 'yum'"
+
+    - name: Install nvidia-docker2 and unzip package (Debian based)
+      action: apt pkg='{{ item }}' state=latest
+      loop:
+        - curl
+        - libnss3-tools
+      when: "'$ansible_pkg_mgr' == 'apt'"
+
+
+- name: Get OS release name (CentOS and Debian based)
+  block:
+
+    - name: Get OS release name
+      shell: "(. /etc/os-release;echo $ID$VERSION_ID)"
+      changed_when: false
+      register: response
+
+    - name: Extract distribution as string from response
+      set_fact:
+        distribution: "{{ response.stdout_lines[0] }}"
+    
+    - name:
+      debug:
+        msg: "{{ distribution }}"
+
+- name: Install NVIDIA 
+  block:
+
+    - name: Install NVIDIA (CentOS based)
+      block:
+
+        - name: add nvidia-docker repository
+          shell: curl -s -L https://nvidia.github.io/nvidia-docker/{{ distribution }}/nvidia-docker.repo | tee /etc/yum.repos.d/nvidia-docker.repo
+
+        - name: Update cache (CentOS based)
+          action: yum update_cache=yes
+
+        - name: Install packages (CentOS based)
+          action: yum name='{{ item }}' state=present
+          loop:
+            - nvidia-docker2
+            - unzip
+
+      when: ansible_pkg_mgr == "yum"
+
+    - name: Install NVIDIA (Debian based) 
+      block:
+
+        - name: add gpgkey for nvidia-docker
+          shell: "curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | apt-key add -"
+
+        - name: add nvidia-docker repository
+          shell: "curl -s -L https://nvidia.github.io/nvidia-docker/{{ distribution }}/nvidia-docker.list | tee /etc/apt/sources.list.d/nvidia-docker.list"
+
+        - name: Update cache (Debian based)
+          action: apt update_cache=yes
+          when: ansible_pkg_mgr == "apt"
+
+        - name: Install packages (Debian based) (Debian based)
+          action: apt pkg='{{ item }}' state=present
+          loop:
+            - nvidia-docker2
+            - unzip
+
+      when: ansible_pkg_mgr == "apt"
+
+- name: disable Nouveau nvidia driver 
+  block:
+
+      - name: disable Nouveau nvidia driver 
+        command: sudo bash -c "echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf" && sudo bash -c "echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf"
+
+      - name: update initramfs
+        command: sudo update-initramfs -u
+
+- name: Unconditionally reboot the machine after installing nvidia-docker
+  reboot:

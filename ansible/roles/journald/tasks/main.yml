@@ -1,0 +1,12 @@
+---
+# tasks file for journald
+- name: Copy journald.conf
+  copy:
+    src: journald.conf
+    dest: /etc/systemd/
+    backup: true
+    owner: root
+    group: root 
+    mode: '0644'
+
+
