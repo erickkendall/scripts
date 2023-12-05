@@ -1,0 +1,88 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+
+# Translations
+*.mo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# VS Code config
+.vscode/
+
+# PyCharm config
+.idea/
+
+# Spyder config
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# Sublime Text config
+.sublime-project
+.sublime-workspace
+
+# Django local settings
+local_settings.py
+
+# Flask local settings
+instance/
+
+# Flask generated files
+webassets-manifest.json
+webassets-cache/
+
+# Scrapy project logs
+*.log
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile
+Pipfile.lock
+
+# virtualenv
+venv/
+env/
+
+# Jupyter Notebook temporary files
+*.nbconvert/
+*.ipynb_checkpoints/
+
